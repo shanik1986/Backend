@@ -2,8 +2,16 @@ def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
-def valid_number?(num)
-  num.to_i() != 0
+def integer?(num)
+  /^\d+$/.match(num)
+end
+
+def float?(num)
+  /\d/.match(num) && /^\d*.?\d*/.match(num)
+end
+
+def number?(num)
+  integer?(num) || float?(num)
 end
 
 def operation_to_message(op)
@@ -19,7 +27,6 @@ def operation_to_message(op)
   end
 end
 
-
 prompt("Welcome to Calculator! Enter you name")
 
 name = ''
@@ -33,15 +40,16 @@ loop do
   end
 end
 
-prompt("Hi #{name }")
+prompt("Hi #{name}")
 
-loop do #Main loop
+loop do # Main loop
+
   number1 = ''
   loop do
     prompt("What's the first number?")
     number1 = Kernel.gets().chomp()
 
-    if valid_number?(number1)
+    if number?(number1)
       break
     else
       prompt("Hmm... That's not a valid number")
@@ -53,11 +61,11 @@ loop do #Main loop
     prompt("What's the second number?")
     number2 = Kernel.gets().chomp()
 
-    if valid_number?(number2)
+    if number?(number2)
       break
     else
       prompt("Hmm... That's not a valid number")
-     end
+    end
   end
 
   operator_prompt = <<-MSG
@@ -86,11 +94,11 @@ loop do #Main loop
             when '1'
               number1.to_i + number2.to_i
             when '2'
-              result = number1.to_i - number2.to_i
+              number1.to_i - number2.to_i
             when '3'
-              result = number1.to_i * number2.to_i
+              number1.to_i * number2.to_i
             when '4'
-              result = number1.to_f / number2.to_f
+              number1.to_f / number2.to_f
             end
 
   prompt("The result is #{result}")
@@ -101,28 +109,3 @@ loop do #Main loop
 end
 
 prompt("Thanks! Bye bye...")
-
-=begin
-Kernel.puts('Please enter the first number:')
-num1 = Kernel.gets().chomp
-
-Kernel.puts('Please enter the second number:')
-num2 = Kernel.gets().chomp
-Kernel.puts("What operation would you like us to perform? (Type: 'add', 'subtract', 'multiply', 'divide')")
-
-operation = nil
-loop do
-  operation = Kernel.gets().chomp().downcase
-  break if operation == 'add' || operation == 'subtract' || operation == 'multiply' || operation == 'divide'
-  Kernel.puts("Input error! Please use the following commands only: 'add', 'subtract', 'multiply', 'divide'")
-end
-
-answer = case operation
-when 'add'      then num1.to_i + num2.to_i
-when 'subtract' then num1.to_i - num2.to_i
-when 'multiply' then num1.to_i * num2.to_i
-when 'divide'   then num1.to_f / num2.to_f
-end
-
-Kernel.puts(answer)
-=end
