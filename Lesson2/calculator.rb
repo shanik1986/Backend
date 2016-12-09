@@ -43,7 +43,7 @@ name = ''
 loop do
   name = Kernel.gets().chomp()
 
-  if name.empty?()
+  if name.empty?() || name.match(/^\s+$/)
     prompt('valid_name')
   else
     break
@@ -53,7 +53,6 @@ end
 Kernel.puts("=> #{MESSAGES[LANGUAGE]['hi_with_name']} #{name}")
 
 loop do # Main loop
-
   number1 = ''
   loop do
     prompt('first_number')
@@ -93,14 +92,25 @@ loop do # Main loop
             when '3'
               number1.to_i * number2.to_i
             when '4'
-              number1.to_f / number2.to_f
+              if num2 == 0
+                (MESSAGES[LANGUAGE]['illigal_operation'])
+              else
+                number1.to_f / number2.to_f
+              end
+
             end
 
   Kernel.puts("=> #{MESSAGES[LANGUAGE]['result']} #{result}")
 
   prompt('more_operations')
-  answer = Kernel.gets().chomp()
-  break unless answer.downcase.start_with?('y')
+
+  answer = ''
+  loop do
+    answer = Kernel.gets().chomp().downcase
+    break if %w(y n).include?(answer.downcase)
+    prompt('valid_response')
+  end
+  break if answer == 'n'
 end
 
 prompt('goodbye')

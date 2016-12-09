@@ -11,7 +11,9 @@ en:
   valid_operation: "Must choose 1, 2, 3 or 4"
   operation_description: "the two numbers..."
   result: "The result is"
-  more_operations: "Do you want to perfom another calculation? (Y to calculate again)"
+  more_operations: "Do you want to perfom another calculation? (Please input 'y' or 'n')"
+  valid_response: "Invalid input! Please enter only 'y' or 'n'"
+  illigal_operation: "Illegal operation: You can't divide by 0"
   goodbye: "Thanks! Bye bye..."
 
   add_verb: "Adding"
