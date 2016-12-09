@@ -1,13 +1,15 @@
-VALID_CHOICES = %w(rock paper scissors)
+VALID_CHOICES = %w(rock paper scissors spock lizard)
 
 def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
 def win?(first, second)
-  (first == 'rock' && second == 'scissors') ||
-    (first == 'paper' && second == 'rock') ||
-    (first == 'scissors' && second == 'paper')
+  (first == 'rock' && (second == 'scissors' || second == 'lizard')) ||
+    (first == 'paper' && (second == 'rock' || second == 'spock')) ||
+    (first == 'scissors' && (second == 'paper' || second == 'lizard')) ||
+    (first == 'spock' && (second == 'rock' || second == 'scissors')) ||
+    (first == 'lizard' && (second == 'spock' || second == 'paper'))
 end
 
 def display_results(player, computer)
@@ -24,9 +26,9 @@ loop do
   choice = ''
   loop do
     prompt("Choose one: #{VALID_CHOICES.join(', ')}")
-    choice = Kernel.gets().chomp()
+    choice = Kernel.gets().chomp().downcase()
 
-    break if VALID_CHOICES.include?(choice.downcase())
+    break if VALID_CHOICES.include?(choice)
     prompt("That's not a valid choice.")
   end
 
