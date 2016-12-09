@@ -6,8 +6,8 @@ end
 
 def win?(first, second)
   (first == 'rock' && second == 'scissors') ||
-  (first == 'paper' && second == 'rock') ||
-  (first == 'scissors' && second == 'paper')
+    (first == 'paper' && second == 'rock') ||
+    (first == 'scissors' && second == 'paper')
 end
 
 def display_results(player, computer)
