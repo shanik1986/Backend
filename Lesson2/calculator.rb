@@ -53,28 +53,23 @@ end
 Kernel.puts("=> #{MESSAGES[LANGUAGE]['hi_with_name']} #{name}")
 
 loop do # Main loop
+
   number1 = ''
   loop do
     prompt('first_number')
     number1 = Kernel.gets().chomp()
+    break if number?(number1)
 
-    if number?(number1)
-      break
-    else
-      prompt('valid_number')
-    end
+    prompt('valid_number')
   end
 
   number2 = ''
   loop do
     prompt('second_number')
     number2 = Kernel.gets().chomp()
+    break if number?(number2)
 
-    if number?(number2)
-      break
-    else
-      prompt('valid_number')
-    end
+    prompt('valid_number')
   end
 
   prompt('operation')
@@ -82,12 +77,9 @@ loop do # Main loop
   operator = ''
   loop do
     operator = Kernel.gets().chomp()
+    break if %w(1 2 3 4).include?(operator)
 
-    if %w(1 2 3 4).include?(operator)
-      break
-    else
-      prompt('valid_operation')
-    end
+    prompt('valid_operation')
   end
 
   operator_verb = operation_to_message(operator)
