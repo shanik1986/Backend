@@ -50,11 +50,9 @@ loop do
   end
 end
 
-Kernel.puts('=> ' + MESSAGES[LANGUAGE]['hi_with_name'] + ' ' + name)
-
+Kernel.puts("=> #{MESSAGES[LANGUAGE]['hi_with_name']} #{name}")
 
 loop do # Main loop
-
   number1 = ''
   loop do
     prompt('first_number')
@@ -93,7 +91,7 @@ loop do # Main loop
   end
 
   operator_verb = operation_to_message(operator)
-  Kernel.puts('=> ' + MESSAGES[LANGUAGE][operator_verb] + ' ' + MESSAGES[LANGUAGE]['operation_description'])
+  Kernel.puts("=> #{MESSAGES[LANGUAGE][operator_verb]} #{MESSAGES[LANGUAGE]['operation_description']}")
 
   result =  case operator
             when '1'
