@@ -17,7 +17,7 @@ def integer?(num)
 end
 
 def float?(num)
-  /\d/.match(num) && /^\d*.?\d*$/.match(num)
+  /\d/.match(num) && /^\d*\.?\d*$/.match(num)
 end
 
 def number?(num)
@@ -81,8 +81,9 @@ loop do # Main loop
     prompt('valid_operation')
   end
 
-  operator_verb = operation_to_message(operator)
-  Kernel.puts("=> #{MESSAGES[LANGUAGE][operator_verb]} #{MESSAGES[LANGUAGE]['operation_description']}")
+  operator_verb = messages(operation_to_message(operator))
+
+  Kernel.puts("=> #{operator_verb} #{messages('operation_description')}")
 
   result =  case operator
             when '1'
@@ -92,7 +93,7 @@ loop do # Main loop
             when '3'
               number1.to_i * number2.to_i
             when '4'
-              if num2.zero?
+              if number2.to_f.zero?
                 (MESSAGES[LANGUAGE]['illigal_operation'])
               else
                 number1.to_f / number2.to_f
@@ -107,7 +108,7 @@ loop do # Main loop
   answer = ''
   loop do
     answer = Kernel.gets().chomp().downcase
-    break if %w(y n).include?(answer.downcase)
+    break if %w(y n).include?(answer)
     prompt('valid_response')
   end
   break if answer == 'n'
