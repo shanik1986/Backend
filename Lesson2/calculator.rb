@@ -17,7 +17,7 @@ def integer?(num)
 end
 
 def float?(num)
-  /\d/.match(num) && /^\d*.?\d*/.match(num)
+  /\d/.match(num) && /^\d*.?\d*$/.match(num)
 end
 
 def number?(num)

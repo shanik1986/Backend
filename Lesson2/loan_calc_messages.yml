@@ -1,0 +1,19 @@
+# loan_calc_messages.yml
+
+welcome: "Welcome to the morgage calculator!"
+
+loan_amount: "What's the amount you would like to loan? (Integers greater than 0 please)"
+invalid_integer: "Invalid input! Please enter integers greater than 0"
+
+apr: "What's the annual percentage rate as decimal?"
+apr_example: "Example: 0.025 for 2.5%', 0.1 for 10% etc"
+invalid_apr: "Invalid input! Please enter a positive APR expressed a decimal"
+
+duration: "What's the duration of the loan (in months)?"
+monthly_interest: "Your monthly interest rate is"
+monthly_payment: "You monthly payment is"
+
+anothe_round: "Would you like to do another calculation? Please answer with a 'y' or a 'n'"
+invalid_answer: "Invalid input! Please answer with a 'y' or a 'n' only"
+
+goodbye: "Thanks and goodbye!"
