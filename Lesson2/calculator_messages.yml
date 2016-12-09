@@ -1,19 +1,25 @@
 # calculator_messages.yml
 
-welcome: "Welcome to Calculator! Enter you name"
-valid_name: "Make sure to use a valid name"
-hi_with_name: "Hi"
-first_number: "What's the first number?"
-second_number: "What's the second number?"
-valid_number: "Hmm... That's not a valid number"
-operation: "What operation would you like to perform?\n1) add\n2) subtract\n3) multiply\n4) divide"
-valid_operation: "Must choose 1, 2, 3 or 4"
-operation_description: "the two numbers..."
-result: "The result is"
-more_operations: "Do you want to perfom another calculation? (Y to calculate again)"
-goodbye: "Thanks! Bye bye..."
+en:
+  welcome: "Welcome to Calculator! Enter you name"
+  valid_name: "Make sure to use a valid name"
+  hi_with_name: "Hi"
+  first_number: "What's the first number?"
+  second_number: "What's the second number?"
+  valid_number: "Hmm... That's not a valid number"
+  operation: "What operation would you like to perform?\n1) add\n2) subtract\n3) multiply\n4) divide"
+  valid_operation: "Must choose 1, 2, 3 or 4"
+  operation_description: "the two numbers..."
+  result: "The result is"
+  more_operations: "Do you want to perfom another calculation? (Y to calculate again)"
+  goodbye: "Thanks! Bye bye..."
 
-add_verb: "Adding"
-subtract_verb: "Subtracting"
-multiply_verb: "Multiplying"
-divide_verb: "Dividing"
+  add_verb: "Adding"
+  subtract_verb: "Subtracting"
+  multiply_verb: "Multiplying"
+  divide_verb: "Dividing"
+
+
+es:
+  welcome: "Bienvenido a la calculadora! Entre su nombre:"
+  valid_name: "Asegúrese de entrar un nombre válido."
