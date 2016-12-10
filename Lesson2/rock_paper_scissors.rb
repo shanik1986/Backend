@@ -1,22 +1,24 @@
 VALID_CHOICES = %w(rock paper scissors spock lizard)
 
+WINNING_CONDITIONS = {
+  'rock'    =>   %w(scissors lizard),
+  'paper'   =>   %w(rock spock),
+  'scissor' =>   %w(paper lizard),
+  'spock'   =>   %w(rock scissors),
+  'lizard'  =>   %w(spock paper)
+}
+
 def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
-def win?(first, second)
-  (first == 'rock' && (second == 'scissors' || second == 'lizard')) ||
-    (first == 'paper' && (second == 'rock' || second == 'spock')) ||
-    (first == 'scissors' && (second == 'paper' || second == 'lizard')) ||
-    (first == 'spock' && (second == 'rock' || second == 'scissors')) ||
-    (first == 'lizard' && (second == 'spock' || second == 'paper'))
-end
-
 def display_results(player, computer)
-  if win?(player, computer)
+  if WINNING_CONDITIONS[player].include?(computer)
     prompt("You won!")
-  elsif win?(computer, player)
+
+  elsif WINNING_CONDITIONS[computer].include?(player)
     prompt("Computer won! ")
+
   else
     prompt("It's a tie!")
   end
