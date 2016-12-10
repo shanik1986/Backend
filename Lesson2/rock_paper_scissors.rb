@@ -1,3 +1,7 @@
+LINE_BREAKS = 4
+
+WINNING_SCORE = 5
+
 ITEMS_PARTICIPATING = %w(rock paper scissors spock lizard)
 
 VALID_CHOICES = {
@@ -20,45 +24,83 @@ def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
-def display_results(player, computer)
+def decide_winner(player, computer)
   if WINNING_CONDITIONS[player].include?(computer)
-    prompt("You won!")
+    true
 
   elsif WINNING_CONDITIONS[computer].include?(player)
-    prompt("Computer won! ")
+    false
+
+  end
+end
+
+def display_results(player_won)
+  if player_won
+    prompt("You won!")
+
+  elsif player_won == false
+    prompt("Computer won!")
 
   else
     prompt("It's a tie!")
   end
 end
 
+def print_round_seperation
+  Kernel.puts("\n" * LINE_BREAKS)
+end
+
 loop do
-  choice = ''
+  computer_score = 0
+  player_score = 0
 
-  choice_instructions = <<-MSG
-  Choose one of the following: #{ITEMS_PARTICIPATING.join(', ')}
+  while (computer_score < WINNING_SCORE) && (player_score < WINNING_SCORE)
+    choice = ''
 
-  Make your choice by typing its first letter.
-  If you have more than one item starting with the same letter, please use
-  the first two letters
-  MSG
+    choice_instructions = <<-MSG
+    Choose one of the following: #{ITEMS_PARTICIPATING.join(', ')}
 
-  loop do
-    prompt(choice_instructions)
-    choice = VALID_CHOICES[Kernel.gets().chomp().downcase()]
+    Make your choice by typing its first letter.
+    If you have more than one item starting with the same letter, please use
+    the first two letters
+    MSG
 
-    break if ITEMS_PARTICIPATING.include?(choice)
-    prompt("That's not a valid choice.")
+    loop do
+      prompt(choice_instructions)
+      choice = VALID_CHOICES[Kernel.gets().chomp().downcase()]
+
+      break if ITEMS_PARTICIPATING.include?(choice)
+      prompt("That's not a valid choice.")
+    end
+
+    computer_choice = ITEMS_PARTICIPATING.sample()
+
+    prompt("You chose: #{choice}; Computer chose: #{computer_choice}")
+
+    player_won = decide_winner(choice, computer_choice)
+
+    display_results(player_won)
+
+    if player_won
+      player_score += 1
+    elsif player_won == false
+      computer_score += 1
+    end
+
+    prompt("Computer Score: #{computer_score}; Player Score: #{player_score}")
+
+    print_round_seperation()
+
   end
 
-  computer_choice =  ITEMS_PARTICIPATING.sample()
-
-  prompt("You chose: #{choice}; Computer chose: #{computer_choice}")
-
-  display_results(choice, computer_choice)
+  if computer_score > player_score
+    prompt("Computer won this game :(")
+  else
+    prompt("Good job! You won this game!")
+  end
 
   answer = ''
-  prompt("Do you want to play again? ('y'/'n')")
+  prompt("Do you want to play another one? ('y'/'n')")
   loop do
     answer = Kernel.gets().chomp().downcase()
 
@@ -68,5 +110,4 @@ loop do
 
   break if answer == 'n'
 end
-
 prompt("Thanks for playing!")
