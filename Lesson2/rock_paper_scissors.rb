@@ -1,11 +1,19 @@
-VALID_CHOICES = %w(rock paper scissors spock lizard)
+ITEMS_PARTICIPATING = %w(rock paper scissors spock lizard)
+
+VALID_CHOICES = {
+  'r'   => 'rock',
+  'p'   => 'paper',
+  'sc'  => 'scissors',
+  'sp'  => 'spock',
+  'l'   => 'lizard'
+}
 
 WINNING_CONDITIONS = {
-  'rock'    =>   %w(scissors lizard),
-  'paper'   =>   %w(rock spock),
-  'scissor' =>   %w(paper lizard),
-  'spock'   =>   %w(rock scissors),
-  'lizard'  =>   %w(spock paper)
+  'rock'     =>   %w(scissors lizard),
+  'paper'    =>   %w(rock spock),
+  'scissors' =>   %w(paper lizard),
+  'spock'    =>   %w(rock scissors),
+  'lizard'   =>   %w(spock paper)
 }
 
 def prompt(message)
@@ -26,15 +34,24 @@ end
 
 loop do
   choice = ''
-  loop do
-    prompt("Choose one: #{VALID_CHOICES.join(', ')}")
-    choice = Kernel.gets().chomp().downcase()
 
-    break if VALID_CHOICES.include?(choice)
+  choice_instructions = <<-MSG
+  Choose one of the following: #{ITEMS_PARTICIPATING.join(', ')}
+
+  Make your choice by typing its first letter.
+  If you have more than one item starting with the same letter, please use
+  the first two letters
+  MSG
+
+  loop do
+    prompt(choice_instructions)
+    choice = VALID_CHOICES[Kernel.gets().chomp().downcase()]
+
+    break if ITEMS_PARTICIPATING.include?(choice)
     prompt("That's not a valid choice.")
   end
 
-  computer_choice =  VALID_CHOICES.sample()
+  computer_choice =  ITEMS_PARTICIPATING.sample()
 
   prompt("You chose: #{choice}; Computer chose: #{computer_choice}")
 
