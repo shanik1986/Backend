@@ -43,6 +43,7 @@ def display_results(player_won)
 
   else
     prompt("It's a tie!")
+
   end
 end
 
