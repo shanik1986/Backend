@@ -26,24 +26,21 @@ end
 
 def decide_winner(player, computer)
   if WINNING_CONDITIONS[player].include?(computer)
-    true
-
+    :player
   elsif WINNING_CONDITIONS[computer].include?(player)
-    false
-
+    :computer
+  else
+    :tie
   end
 end
 
-def display_results(player_won)
-  if player_won
+def display_results(winner)
+  if winner == :player
     prompt("You won!")
-
-  elsif player_won == false
+  elsif winner == :computer
     prompt("Computer won!")
-
   else
     prompt("It's a tie!")
-
   end
 end
 
@@ -57,41 +54,37 @@ loop do
 
   while (computer_score < WINNING_SCORE) && (player_score < WINNING_SCORE)
     choice = ''
-
-    choice_instructions = <<-MSG
-    Choose one of the following: #{ITEMS_PARTICIPATING.join(', ')}
-
-    Make your choice by typing its first letter.
-    If you have more than one item starting with the same letter, please use
-    the first two letters
-    MSG
-
     loop do
-      prompt(choice_instructions)
-      choice = VALID_CHOICES[Kernel.gets().chomp().downcase()]
+      prompt("Choose one of the following:")
+      prompt("[r]ock, [p]aper, [sc]issors, [sp]ock, [l]izard")
 
-      break if ITEMS_PARTICIPATING.include?(choice)
+      choice = Kernel.gets().chomp().downcase()
+
+      if ITEMS_PARTICIPATING.include?(choice) || VALID_CHOICES.key?(choice)
+        choice = VALID_CHOICES[choice] if VALID_CHOICES.key?(choice)
+        break
+      end
+
       prompt("That's not a valid choice.")
     end
 
     computer_choice = ITEMS_PARTICIPATING.sample()
 
-    prompt("You chose: #{choice}; Computer chose: #{computer_choice}")
+    prompt("You chose: #{choice};\tComputer chose: #{computer_choice}")
 
-    player_won = decide_winner(choice, computer_choice)
+    who_won = decide_winner(choice, computer_choice)
 
-    display_results(player_won)
+    display_results(who_won)
 
-    if player_won
+    if who_won == :player
       player_score += 1
-    elsif player_won == false
+    elsif who_won == :computer
       computer_score += 1
     end
 
-    prompt("Computer Score: #{computer_score}; Player Score: #{player_score}")
+    prompt("Player Score: #{player_score};\tComputer Score: #{computer_score}")
 
     print_round_seperation()
-
   end
 
   if computer_score > player_score
