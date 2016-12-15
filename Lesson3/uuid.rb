@@ -1,11 +1,9 @@
-def uuid_generator
-  uuid = [random_string(8)]
+def generate_uuid
+  sections_length = [8, 4, 4, 4, 12]
 
-  3.times {uuid += [random_string(4)]}
+  uuid = []
+  sections_length.each {|length| uuid += [random_string(length)]}
 
-  uuid += [random_string(12)]
-
-  # p uuid
   uuid.join('-')
 end
 
@@ -13,10 +11,10 @@ def random_string(string_length)
   chars = ('a'..'f').to_a + ('0'..'9').to_a
 
   string = ''
-  string_length.times {string += chars[rand(0..(chars.size - 1))]}
+  string_length.times {string += chars.sample}
   string
 end
 
-uuid = uuid_generator
+uuid = generate_uuid
 
 puts uuid
