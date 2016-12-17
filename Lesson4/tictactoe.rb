@@ -5,7 +5,7 @@ WINNING_LINES = [
   [2, 5, 8], [1, 4, 7], [3, 6, 9], # columns
   [1, 5, 9], [3, 5, 7]             # diagonals
 ]
-WINNING_SCORE = 2
+WIN_SCORE = 2
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
@@ -121,7 +121,7 @@ end
 
 def player_chooses_beginner
   answer = ''
-  prompt "Who would you like to go first? (player or computer)"
+  prompt "Who would you like to go first this round? (player or computer)"
   loop do
     answer = gets.chomp.downcase
     break if %w(player computer).include?(answer)
@@ -142,10 +142,22 @@ def decide_turn
   is_player_turn
 end
 
+def display_win_status(brd, game_type)
+  if someone_won?(brd)
+    prompt "#{detect_winner(brd)} won the #{game_type}!"
+  else
+    prompt "The #{game_type} is a tie!"
+  end
+  if game_type == 'mini game'
+    prompt "Enter any key to continue"
+    gets.chomp
+  end
+end
+
 loop do
   scores = { 'Player' => 0, 'Computer' => 0 }
 
-  while scores.values.max < WINNING_SCORE
+  while scores.values.max < WIN_SCORE
     board = initialize_board
     is_player_turn = decide_turn
 
@@ -153,22 +165,19 @@ loop do
       display_board(board, scores)
 
       play_round(board, is_player_turn)
-      break if someone_won?(board) || board_full?(board)
+
+      if someone_won?(board) || board_full?(board)
+        scores[detect_winner(board)] += 1 if someone_won?(board)
+        display_board(board, scores)
+        display_win_status(board, 'mini game') if scores.values.max < WIN_SCORE
+        break
+      end
 
       is_player_turn = !is_player_turn
     end
-
-    display_board(board, scores)
-
-    scores[detect_winner(board)] += 1 if someone_won?(board)
   end
 
-  if someone_won?(board)
-    prompt "#{detect_winner(board)} won!"
-  else
-    prompt "It's a tie!"
-  end
-
+  display_win_status(board, 'whole game')
   prompt "Play again? (y or n)"
   answer = ''
   loop do
