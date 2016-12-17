@@ -75,22 +75,17 @@ def find_square(brd, marker)
       return square if !!square
     end
   end
+  nil
 end
 
-def determine_strategy!(brd, strategy)
-  strategy[:square] = find_square(brd, COMPUTER_MARKER)
-  if !strategy[:square].nil?
-    strategy[:should_attack] = true
-    return
-  end
+def determine_strategy(brd)
+  square = find_square(brd, COMPUTER_MARKER) # Attacking strategy
+  return square unless square.nil?
 
-  strategy[:square] = find_square(brd, PLAYER_MARKER)
-  if !strategy[:square].nil?
-    strategy[:should_defend] = true
-    return
-  end
+  square = find_square(brd, PLAYER_MARKER)  # Defending strategy
+  return square unless square.nil?
 
-  strategy[:square] = empty_squares(brd).sample
+  empty_squares(brd).sample                 # Random strategy
 end
 
 def board_full?(brd)
@@ -119,17 +114,15 @@ loop do
     board = initialize_board
 
     loop do
-      strategy = { should_attack: false, should_defend: false, square: nil }
-
       display_board(board, scores)
 
       player_places_piece!(board)
 
       break if someone_won?(board) || board_full?(board)
 
-      determine_strategy!(board, strategy)
+      square = determine_strategy(board)
 
-      board[strategy[:square]] = COMPUTER_MARKER
+      board[square] = COMPUTER_MARKER
 
       break if someone_won?(board) || board_full?(board)
     end
