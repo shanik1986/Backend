@@ -67,38 +67,30 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-def computer_places_piece(brd, threat_details)
-  if threat_details[:is_there_threat]
-    play_defense(brd, threat_details)
-  else
-    play_random(brd)
-  end
-end
-
-def play_random(brd)
-  square = empty_squares(brd).sample
-  brd[square] = COMPUTER_MARKER
-end
-
-def play_defense(brd, threat_details)
-  square = threat_details[:location]
-  brd[square] = COMPUTER_MARKER
-end
-
-def determine_threat(brd)
-  threat_details = { is_there_threat: false }
+def find_square(brd, marker)
   WINNING_LINES.each do |line|
-    computer_marker_exists = brd.values_at(*line).include?(COMPUTER_MARKER)
-    two_player_markers = brd.values_at(*line).count(PLAYER_MARKER) == 2
-
-    if two_player_markers && !computer_marker_exists
-      possible_threats = brd.select { |k, _| line.include?(k) }
-      threat_details[:location] = possible_threats.key(INITIAL_MARKER)
-      threat_details[:is_there_threat] = true
-      return threat_details
+    if brd.values_at(*line).count(marker) == 2
+      square = brd.select { |k, v| line.include?(k) && v == INITIAL_MARKER }
+      square = square.keys.first
+      return square if !!square
     end
   end
-  threat_details
+end
+
+def determine_strategy!(brd, strategy)
+  strategy[:square] = find_square(brd, COMPUTER_MARKER)
+  if !strategy[:square].nil?
+    strategy[:should_attack] = true
+    return
+  end
+
+  strategy[:square] = find_square(brd, PLAYER_MARKER)
+  if !strategy[:square].nil?
+    strategy[:should_defend] = true
+    return
+  end
+
+  strategy[:square] = empty_squares(brd).sample
 end
 
 def board_full?(brd)
@@ -127,15 +119,17 @@ loop do
     board = initialize_board
 
     loop do
+      strategy = { should_attack: false, should_defend: false, square: nil }
+
       display_board(board, scores)
 
       player_places_piece!(board)
 
       break if someone_won?(board) || board_full?(board)
 
-      threat_details = determine_threat(board)
+      determine_strategy!(board, strategy)
 
-      computer_places_piece(board, threat_details)
+      board[strategy[:square]] = COMPUTER_MARKER
 
       break if someone_won?(board) || board_full?(board)
     end
