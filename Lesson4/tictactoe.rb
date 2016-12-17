@@ -9,6 +9,7 @@ WINNING_SCORE = 2
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
+BEGINNING_SETTING = 'choose'
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -57,7 +58,7 @@ end
 def player_places_piece!(brd)
   square = ''
   loop do
-    prompt "Choose a square (#{joinor(empty_squares(brd))})"
+    prompt "Your turn. Choose a square (#{joinor(empty_squares(brd))})"
     square = gets.chomp.to_i
     break if empty_squares(brd).include?(square)
 
@@ -72,20 +73,22 @@ def find_square(brd, marker)
     if brd.values_at(*line).count(marker) == 2
       square = brd.select { |k, v| line.include?(k) && v == INITIAL_MARKER }
       square = square.keys.first
-      return square if !!square
+      return square if !square.nil?
     end
   end
   nil
 end
 
 def determine_strategy(brd)
-  square = find_square(brd, COMPUTER_MARKER) # Attacking strategy
+  square = find_square(brd, COMPUTER_MARKER) # Winning attack strategy
   return square unless square.nil?
 
-  square = find_square(brd, PLAYER_MARKER)  # Defending strategy
+  square = find_square(brd, PLAYER_MARKER)   # Urgent defence strategy
   return square unless square.nil?
 
-  empty_squares(brd).sample                 # Random strategy
+  return 5 if brd[5] == INITIAL_MARKER       # Focus on center strategy
+
+  empty_squares(brd).sample                  # Random pick strategy
 end
 
 def board_full?(brd)
@@ -107,24 +110,52 @@ def detect_winner(brd)
   nil
 end
 
+def play_round(brd, is_player_turn)
+  if is_player_turn
+    player_places_piece!(brd)
+  else
+    square = determine_strategy(brd)
+    brd[square] = COMPUTER_MARKER
+  end
+end
+
+def player_chooses_beginner
+  answer = ''
+  prompt "Who would you like to go first? (player or computer)"
+  loop do
+    answer = gets.chomp.downcase
+    break if %w(player computer).include?(answer)
+    prompt "Invalid input! Please answer with 'Player' or 'Computer' only!"
+  end
+  answer
+end
+
+def decide_turn
+  answer = player_chooses_beginner if BEGINNING_SETTING == 'choose'
+
+  if BEGINNING_SETTING == 'player' || answer == 'player'
+    is_player_turn = true
+  elsif BEGINNING_SETTING == 'computer' || answer == 'computer'
+    is_player_turn = false
+  end
+
+  is_player_turn
+end
+
 loop do
   scores = { 'Player' => 0, 'Computer' => 0 }
 
   while scores.values.max < WINNING_SCORE
     board = initialize_board
+    is_player_turn = decide_turn
 
     loop do
       display_board(board, scores)
 
-      player_places_piece!(board)
-
+      play_round(board, is_player_turn)
       break if someone_won?(board) || board_full?(board)
 
-      square = determine_strategy(board)
-
-      board[square] = COMPUTER_MARKER
-
-      break if someone_won?(board) || board_full?(board)
+      is_player_turn = !is_player_turn
     end
 
     display_board(board, scores)
