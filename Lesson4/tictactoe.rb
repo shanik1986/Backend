@@ -71,7 +71,7 @@ def find_square(brd, marker)
     if brd.values_at(*line).count(marker) == 2
       square = brd.select { |k, v| line.include?(k) && v == INITIAL_MARKER }
       square = square.keys.first
-      return square if !square.nil?
+      return square if square
     end
   end
   nil
@@ -79,10 +79,10 @@ end
 
 def determine_strategy(brd)
   square = find_square(brd, COMPUTER_MARKER) # Winning attack strategy
-  return square unless square.nil?
+  return square unless !square
 
   square = find_square(brd, PLAYER_MARKER)   # Urgent defence strategy
-  return square unless square.nil?
+  return square unless !square
 
   return 5 if brd[5] == INITIAL_MARKER       # Focus on center strategy
 
