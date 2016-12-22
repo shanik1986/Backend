@@ -1,24 +1,13 @@
-require 'pry'
-# 1. Initialize deck
-# 2. Deal cards for the dealer and player
-# 3. Player decides 'hit' or 'stay'
-#   - repeat until  'bust' or 'stay'
-# 4. If player busts, dealer wins - Go to 1
-# 5. Dealer draws until sum > 16 or 'bust'
-# 6. If dealer busts, player wins - Go to 1
-# 7. Compare both sums and declare winner
-
 VALUES = {
   '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8,
   '9' => 9, '10' => 10, 'Jack' => 10, 'Queen' => 10, 'King' => 10, 'Ace' => 11
 }
 SUITS = { 'H' => 'Hearts', 'C' => 'Clubs', 'D' => 'Diamonds', 'S' => 'Spades' }
 
-# VALUES = { 'Ace' => 11 }
-# SUITS = { 'H' => 'Hearts', 'C' => 'Clubs', 'D' => 'Diamonds', 'S' => 'Spades',
-#           'R' => 'Random', 'R2' => 'Random2', 'R3' => 'Random3',
-#           'R4' => 'Random4'
-#         }
+# TEST-VALUES = { 'Ace' => 11 }
+# TEST- SUITS = { 'H' => 'Hearts', 'C' => 'Clubs', 'D' => 'Diamonds',
+# 'S' => 'Spades', 'R' => 'Random', 'R2' => 'Random2', 'R3' => 'Random3',
+# 'R4' => 'Random4' }
 
 MAX_SUM = 21
 DEALER_MAX = 17
@@ -75,19 +64,28 @@ def player_round(deck, player_status)
 
     display_cards('Player', player_status[:cards])
   end
+  conclude_round('Player', player_status)
 end
 
+def conclude_round(identity, status)
+  if status[:sum] > 21
+    prompt "#{identity} busts!"
+    status[:is_busted] = true
+  elsif status[:sum] == 21
+    prompt "#{identity} got 21!"
+  end
+end
 
 def dealer_round(deck, dealer_status)
   initialize_round!(dealer_status)
-  binding.pry
 
   while dealer_status[:sum] < 17
     hit!(deck, dealer_status)
+    prompt 'Dealer draws card'
     update_status!(dealer_status)
     display_cards('Dealer', dealer_status[:cards])
   end
-  prompt "Dealer Busts" if dealer_status[:sum] > 21
+  conclude_round('Dealer', dealer_status)
 end
 
 def initialize_round!(status)
@@ -98,7 +96,6 @@ end
 def update_status!(status)
   last_card = status[:cards].last
   status[:sum] += VALUES[last_card.first]
-  binding.pry
   if status[:unadjusted_aces] > 0 && status[:sum] > 21
     adjust_for_aces!(status)
   end
@@ -115,7 +112,7 @@ def calculate_sum(cards)
   sum = 0
 
   all_values = VALUES.values_at(*get_all_firsts(cards))
-  all_values.each {|value| sum += value}
+  all_values.each { |value| sum += value }
   sum
 end
 
@@ -130,20 +127,51 @@ def hit_or_stay?
   answer
 end
 
-deck = initialize_deck
-dealer_status = { cards: [], sum: 0, unadjusted_aces: 0 }
-player_status = { cards: [], sum: 0, unadjusted_aces: 0 }
+def display_winner(dealer, player)
+  if player[:is_busted]
+    prompt "Dealer wins!"
+  elsif dealer[:is_busted]
+    prompt "Player wins!"
+  elsif player[:sum] > dealer[:sum]
+    prompt "Player wins!"
+  elsif player[:sum] < dealer[:sum]
+    prompt "Dealer wins!"
+  else
+    prompt "It's a tie! You both have #{dealer[:sum]}"
+  end
+end
 
-hit!(deck, dealer_status, 2) #Deal the dealer's first two cards
-hit!(deck, player_status, 2) #Deal the player's first two cards
+def play_again?
+  prompt "Would you like to play again?('y'/'n')"
+  answer = ''
+  loop do
+    answer = gets.chomp.downcase
+    break if %w(y yes n no).include?(answer)
+    prompt "Invalid input! Please enter 'y' or 'n'"
+  end
 
-prompt "Dealer has: #{dealer_status[:cards].first.first} and an unknown card"
-display_cards('Player', player_status[:cards])
+  answer
+end
 
-player_round(deck, player_status)
+loop do
+  system 'cls'
+  deck = initialize_deck
+  dealer_status = { cards: [], sum: 0, unadjusted_aces: 0 }
+  player_status = { cards: [], sum: 0, unadjusted_aces: 0 }
 
-dealer_round(deck, dealer_status)
+  hit!(deck, dealer_status, 2) # Deal the dealer's first two cards
+  hit!(deck, player_status, 2) # Deal the player's first two cards
 
-# Pick cards for dealer and player
+  prompt "Dealer has: #{dealer_status[:cards].first.first} and an unknown card"
+  display_cards('Player', player_status[:cards])
 
-# "Show" cards of dealer and player
+  player_round(deck, player_status)
+
+  display_cards('Dealer', dealer_status[:cards])
+  dealer_round(deck, dealer_status) unless player_status[:is_busted]
+
+  display_winner(dealer_status, player_status)
+
+  answer = play_again?
+  break if %w(n no).include?(answer)
+end
