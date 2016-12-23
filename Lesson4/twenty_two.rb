@@ -3,6 +3,7 @@ VALUES = {
   '9' => 9, '10' => 10, 'Jack' => 10, 'Queen' => 10, 'King' => 10, 'Ace' => 11
 }
 SUITS = { 'H' => 'Hearts', 'C' => 'Clubs', 'D' => 'Diamonds', 'S' => 'Spades' }
+ROUNDS_IN_GAME = 50
 
 # TEST-VALUES = { 'Ace' => 11 }
 # TEST- SUITS = { 'H' => 'Hearts', 'C' => 'Clubs', 'D' => 'Diamonds',
@@ -57,10 +58,10 @@ def player_round(deck, player_status)
   initialize_round!(player_status)
 
   while player_status[:sum] < MAX_SUM
-    answer = hit_or_stay?
+    answer = hit_or_stay
     break if answer == 'stay'
     hit!(deck, player_status)
-    update_status!(player_status)
+    add_last_card_value!(player_status)
 
     display_cards('Player', player_status[:cards])
   end
@@ -82,7 +83,7 @@ def dealer_round(deck, dealer_status)
   while dealer_status[:sum] < 17
     hit!(deck, dealer_status)
     prompt 'Dealer draws card'
-    update_status!(dealer_status)
+    add_last_card_value!(dealer_status)
     display_cards('Dealer', dealer_status[:cards])
   end
   conclude_round('Dealer', dealer_status)
@@ -93,7 +94,7 @@ def initialize_round!(status)
   adjust_for_aces!(status) if status[:sum] > 21
 end
 
-def update_status!(status)
+def add_last_card_value!(status)
   last_card = status[:cards].last
   status[:sum] += VALUES[last_card.first]
   if status[:unadjusted_aces] > 0 && status[:sum] > 21
@@ -110,13 +111,12 @@ end
 
 def calculate_sum(cards)
   sum = 0
-
   all_values = VALUES.values_at(*get_all_firsts(cards))
   all_values.each { |value| sum += value }
   sum
 end
 
-def hit_or_stay?
+def hit_or_stay
   answer = ''
   loop do
     prompt "Hit or Stay?"
@@ -127,21 +127,23 @@ def hit_or_stay?
   answer
 end
 
-def display_winner(dealer, player)
-  if player[:is_busted]
-    prompt "Dealer wins!"
-  elsif dealer[:is_busted]
-    prompt "Player wins!"
-  elsif player[:sum] > dealer[:sum]
-    prompt "Player wins!"
-  elsif player[:sum] < dealer[:sum]
-    prompt "Dealer wins!"
+def display_game_winner(dealer, player)
+  display_score(dealer, player)
+
+  if dealer > player
+    prompt "Dealer won the game!"
   else
-    prompt "It's a tie! You both have #{dealer[:sum]}"
+    prompt "Player won the game!"
   end
 end
 
-def play_again?
+def display_score(dealer, player)
+  puts "======================================================="
+  prompt "Dealer's score: #{dealer}\t\tPlayer's score: #{player}"
+  puts "======================================================="
+end
+
+def play_again
   prompt "Would you like to play again?('y'/'n')"
   answer = ''
   loop do
@@ -153,25 +155,69 @@ def play_again?
   answer
 end
 
+def determine_winner(dealer, player)
+  if player[:is_busted]
+    :Dealer
+  elsif dealer[:is_busted]
+    :Player
+  elsif player[:sum] > dealer[:sum]
+    :Player
+  elsif player[:sum] < dealer[:sum]
+    :Dealer
+  end
+end
+
+def initialize_status!(status)
+  status[:cards] = []
+  status[:sum] = 0
+  status[:unadjusted_aces] = 0
+  status[:is_busted] = false
+end
+
+def conclude_mini_game(dealer, player)
+  winner = determine_winner(dealer, player)
+  if winner == :Player
+    player[:score] += 1
+    prompt 'Player wins this round!'
+  elsif winner == :Dealer
+    dealer[:score] += 1
+    prompt 'Dealer wins this round!'
+  else
+    prompt "It's a tie! You both have #{dealer[:sum]}"
+  end
+end
+
 loop do
-  system 'cls'
-  deck = initialize_deck
-  dealer_status = { cards: [], sum: 0, unadjusted_aces: 0 }
-  player_status = { cards: [], sum: 0, unadjusted_aces: 0 }
+  dealer_status = { score: 0 }
+  player_status = { score: 0 }
 
-  hit!(deck, dealer_status, 2) # Deal the dealer's first two cards
-  hit!(deck, player_status, 2) # Deal the player's first two cards
+  while dealer_status[:score] < ROUNDS_IN_GAME &&
+        player_status[:score] < ROUNDS_IN_GAME
+    system 'cls'
+    display_score(dealer_status[:score], player_status[:score])
 
-  prompt "Dealer has: #{dealer_status[:cards].first.first} and an unknown card"
-  display_cards('Player', player_status[:cards])
+    deck = initialize_deck
+    initialize_status!(dealer_status)
+    initialize_status!(player_status)
 
-  player_round(deck, player_status)
+    hit!(deck, dealer_status, 2) # Deal the dealer's first two cards
+    hit!(deck, player_status, 2) # Deal the player's first two cards
 
-  display_cards('Dealer', dealer_status[:cards])
-  dealer_round(deck, dealer_status) unless player_status[:is_busted]
+    dealer_card_value = dealer_status[:cards].first.first
+    prompt "Dealer has: #{dealer_card_value} and an unknown card"
+    display_cards('Player', player_status[:cards])
 
-  display_winner(dealer_status, player_status)
+    player_round(deck, player_status)
+    display_cards('Dealer', dealer_status[:cards])
+    dealer_round(deck, dealer_status) unless player_status[:is_busted]
 
-  answer = play_again?
+    conclude_mini_game(dealer_status, player_status)
+    prompt "Enter any key to continue"
+    gets.chomp
+  end
+
+  display_game_winner(dealer_status[:score], player_status[:score])
+
+  answer = play_again
   break if %w(n no).include?(answer)
 end
