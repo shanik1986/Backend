@@ -3,7 +3,7 @@ VALUES = {
   '9' => 9, '10' => 10, 'Jack' => 10, 'Queen' => 10, 'King' => 10, 'Ace' => 11
 }
 SUITS = { 'H' => 'Hearts', 'C' => 'Clubs', 'D' => 'Diamonds', 'S' => 'Spades' }
-ROUNDS_IN_GAME = 50
+ROUNDS_IN_GAME = 5
 
 # TEST-VALUES = { 'Ace' => 11 }
 # TEST- SUITS = { 'H' => 'Hearts', 'C' => 'Clubs', 'D' => 'Diamonds',
@@ -157,13 +157,13 @@ end
 
 def determine_winner(dealer, player)
   if player[:is_busted]
-    :Dealer
+    :dealer
   elsif dealer[:is_busted]
-    :Player
+    :player
   elsif player[:sum] > dealer[:sum]
-    :Player
+    :player
   elsif player[:sum] < dealer[:sum]
-    :Dealer
+    :dealer
   end
 end
 
@@ -176,10 +176,10 @@ end
 
 def conclude_mini_game(dealer, player)
   winner = determine_winner(dealer, player)
-  if winner == :Player
+  if winner == :player
     player[:score] += 1
     prompt 'Player wins this round!'
-  elsif winner == :Dealer
+  elsif winner == :dealer
     dealer[:score] += 1
     prompt 'Dealer wins this round!'
   else
